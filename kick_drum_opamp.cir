@@ -1,0 +1,41 @@
+* Minimal TR-606-style Kick Drum Circuit
+* Single op-amp resonant kick circuit (2R + 2C)
+
+Vcc VCC 0 DC 12
+Vee VEE 0 DC -12
+
+* Trigger pulse source (5V, short pulse)
+Vtrig TRIG 0 PULSE(0 5 1m 1u 1u 1m 20m)
+
+* Input coupling capacitor
+Cin TRIG N001 220n
+
+* Input resistor
+Rin N001 N002 12k
+
+* Op-amp model (generic idealized op-amp)
+* XU1: non-inverting input, inverting input, output, V+, V-
+XU1 0 N002 OUT VCC VEE OPAMP
+
+* Feedback path: capacitor + resistor in series
+Cf N002 N003 220n
+Rf N003 OUT 12k
+
+* Load resistor
+RL OUT 0 100k
+
+* Op-amp subcircuit (simple idealized op-amp)
+.subckt OPAMP 1 2 3 4 5
+* Pins: non-inv(1), inv(2), out(3), V+(4), V-(5)
+EGAIN 6 0 1 2 1e6
+ROUT 6 3 10
+.ends OPAMP
+
+* Simulation control
+.tran 0 100m 0 1u
+.control
+run
+plot V(OUT)
+.endc
+
+.end
